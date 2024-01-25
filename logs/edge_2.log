@@ -1,0 +1,310 @@
+Connection to 34.134.227.62 closed.
+PS C:\Users\hrushi> ssh terraform-worker01.us-central1-c.kube-edge-412213
+The authenticity of host 'compute.2714950832119321496 (34.71.227.65)' can't be established.
+ED25519 key fingerprint is SHA256:alcfCD2o/XA4041UU/lgjdNRl3Q9la9BcchV4jkiSUg.
+This key is not known by any other names
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+Warning: Permanently added 'compute.2714950832119321496' (ED25519) to the list of known hosts.
+Welcome to Ubuntu 22.04.3 LTS (GNU/Linux 6.2.0-1019-gcp x86_64)
+
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/pro
+
+  System information as of Thu Jan 25 09:45:24 UTC 2024
+
+  System load:  0.70654296875     Processes:             123
+  Usage of /:   21.8% of 9.51GB   Users logged in:       0
+  Memory usage: 8%                IPv4 address for ens4: 10.128.0.2
+  Swap usage:   0%
+
+Expanded Security Maintenance for Applications is not enabled.
+
+9 updates can be applied immediately.
+2 of these updates are standard security updates.
+To see these additional updates run: apt list --upgradable
+
+Enable ESM Apps to receive additional future security updates.
+See https://ubuntu.com/esm or run: sudo pro status
+
+
+
+The programs included with the Ubuntu system are free software;
+the exact distribution terms for each program are described in the
+individual files in /usr/share/doc/*/copyright.
+
+Ubuntu comes with ABSOLUTELY NO WARRANTY, to the extent permitted by
+applicable law.
+
+hrushi@terraform-worker01:~$ sudo su
+root@terraform-worker01:/home/hrushi# iptables -F && iptables -t nat -F && iptables -t mangle -F && iptables -X
+root@terraform-worker01:/home/hrushi# sudo iptables -P FORWARD ACCEPT
+root@terraform-worker01:/home/hrushi# exit
+exit
+hrushi@terraform-worker01:~$ sudo crictl ps
+CONTAINER           IMAGE                                                              CREATED              STATE               NAME                ATTEMPT             POD ID              POD
+4065354df0f1d       db7b01e105753475c198490cf875df1314fd1a599f67ea1b184586cb399e1cae   About a minute ago   Running             kube-proxy          0                   fc8f8a05e882e       kube-proxy-5j6hr
+0b782011b9e92       5dade4ce550b85d4a56054bc8d74e72350f46613129145c28dd7fa39ccf2c6be   About a minute ago   Running             mqtt                0                   091fc92b0b30b       mqtt-kubeedge
+hrushi@terraform-worker01:~$ sudo crictl ps
+CONTAINER           IMAGE                                                              CREATED              STATE               NAME                ATTEMPT             POD ID              POD
+4065354df0f1d       db7b01e105753475c198490cf875df1314fd1a599f67ea1b184586cb399e1cae   About a minute ago   Running             kube-proxy          0                   fc8f8a05e882e       kube-proxy-5j6hr
+0b782011b9e92       5dade4ce550b85d4a56054bc8d74e72350f46613129145c28dd7fa39ccf2c6be   About a minute ago   Running             mqtt                0                   091fc92b0b30b       mqtt-kubeedge
+hrushi@terraform-worker01:~$ sudo sed -i -n '/edgeStream/{p;n;s/false/true/};p' /etc/kubeedge/config/edgecore.yaml
+hrushi@terraform-worker01:~$ head /etc/kubeedge/config/edgecore.yaml
+apiVersion: edgecore.config.kubeedge.io/v1alpha2
+database:
+  aliasName: default
+  dataSource: /var/lib/kubeedge/edgecore.db
+  driverName: sqlite3
+kind: EdgeCore
+modules:
+  dbTest:
+    enable: false
+  deviceTwin:
+hrushi@terraform-worker01:~$ vim /etc/kubeedge/config/edgecore.yaml
+hrushi@terraform-worker01:~$ sudo vim /etc/kubeedge/config/edgecore.yaml
+hrushi@terraform-worker01:~$ sudo systemctl restart edgecore.servicemctl restart edgecore.service
+hrushi@terraform-worker01:~$ sudo systemctl restart edgecore.service
+hrushi@terraform-worker01:~$ curl 127.0.0.1:10550/api/v1/services
+{
+  "apiVersion": "v1",
+  "items": [
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "creationTimestamp": "2024-01-25T09:47:07Z",
+        "labels": {
+          "component": "apiserver",
+          "provider": "kubernetes"
+        },
+        "managedFields": [
+          {
+            "apiVersion": "v1",
+            "fieldsType": "FieldsV1",
+            "fieldsV1": {
+              "f:metadata": {
+                "f:labels": {
+                  ".": {},
+                  "f:component": {},
+                  "f:provider": {}
+                }
+              },
+              "f:spec": {
+                "f:clusterIP": {},
+                "f:internalTrafficPolicy": {},
+                "f:ipFamilyPolicy": {},
+                "f:ports": {
+                  ".": {},
+                  "k:{\"port\":443,\"protocol\":\"TCP\"}": {
+                    ".": {},
+                    "f:name": {},
+                    "f:port": {},
+                    "f:protocol": {},
+                    "f:targetPort": {}
+                  }
+                },
+                "f:sessionAffinity": {},
+                "f:type": {}
+              }
+            },
+            "manager": "kube-apiserver",
+            "operation": "Update",
+            "time": "2024-01-25T09:47:07Z"
+          }
+        ],
+        "name": "kubernetes",
+        "namespace": "default",
+        "resourceVersion": "232",
+        "uid": "2543a277-5076-4f80-ac59-8afb87b7955f"
+      },
+      "spec": {
+        "clusterIP": "172.17.0.1",
+        "clusterIPs": [
+          "172.17.0.1"
+        ],
+        "internalTrafficPolicy": "Cluster",
+        "ipFamilies": [
+          "IPv4"
+        ],
+        "ipFamilyPolicy": "SingleStack",
+        "ports": [
+          {
+            "name": "https",
+            "port": 443,
+            "protocol": "TCP",
+            "targetPort": 6443
+          }
+        ],
+        "sessionAffinity": "None",
+        "type": "ClusterIP"
+      },
+      "status": {
+        "loadBalancer": {}
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "annotations": {
+          "prometheus.io/port": "9153",
+          "prometheus.io/scrape": "true"
+        },
+        "creationTimestamp": "2024-01-25T09:47:10Z",
+        "labels": {
+          "k8s-app": "kube-dns",
+          "kubernetes.io/cluster-service": "true",
+          "kubernetes.io/name": "CoreDNS"
+        },
+        "managedFields": [
+          {
+            "apiVersion": "v1",
+            "fieldsType": "FieldsV1",
+            "fieldsV1": {
+              "f:metadata": {
+                "f:annotations": {
+                  ".": {},
+                  "f:prometheus.io/port": {},
+                  "f:prometheus.io/scrape": {}
+                },
+                "f:labels": {
+                  ".": {},
+                  "f:k8s-app": {},
+                  "f:kubernetes.io/cluster-service": {},
+                  "f:kubernetes.io/name": {}
+                }
+              },
+              "f:spec": {
+                "f:clusterIP": {},
+                "f:internalTrafficPolicy": {},
+                "f:ports": {
+                  ".": {},
+                  "k:{\"port\":53,\"protocol\":\"TCP\"}": {
+                    ".": {},
+                    "f:name": {},
+                    "f:port": {},
+                    "f:protocol": {},
+                    "f:targetPort": {}
+                  },
+                  "k:{\"port\":53,\"protocol\":\"UDP\"}": {
+                    ".": {},
+                    "f:name": {},
+                    "f:port": {},
+                    "f:protocol": {},
+                    "f:targetPort": {}
+                  },
+                  "k:{\"port\":9153,\"protocol\":\"TCP\"}": {
+                    ".": {},
+                    "f:name": {},
+                    "f:port": {},
+                    "f:protocol": {},
+                    "f:targetPort": {}
+                  }
+                },
+                "f:selector": {},
+                "f:sessionAffinity": {},
+                "f:type": {}
+              }
+            },
+            "manager": "kubeadm",
+            "operation": "Update",
+            "time": "2024-01-25T09:47:10Z"
+          }
+        ],
+        "name": "kube-dns",
+        "namespace": "kube-system",
+        "resourceVersion": "300",
+        "uid": "656c674f-ae99-42a3-bf7a-cd9fa4a3fa7a"
+      },
+      "spec": {
+        "clusterIP": "172.17.0.10",
+        "clusterIPs": [
+          "172.17.0.10"
+        ],
+        "internalTrafficPolicy": "Cluster",
+        "ipFamilies": [
+          "IPv4"
+        ],
+        "ipFamilyPolicy": "SingleStack",
+        "ports": [
+          {
+            "name": "dns",
+            "port": 53,
+            "protocol": "UDP",
+            "targetPort": 53
+          },
+          {
+            "name": "dns-tcp",
+            "port": 53,
+            "protocol": "TCP",
+            "targetPort": 53
+          },
+          {
+            "name": "metrics",
+            "port": 9153,
+            "protocol": "TCP",
+            "targetPort": 9153
+          }
+        ],
+        "selector": {
+          "k8s-app": "kube-dns"
+        },
+        "sessionAffinity": "None",
+        "type": "ClusterIP"
+      },
+      "status": {
+        "loadBalancer": {}
+      }
+    }
+  ],
+  "kind": "ServiceList",
+  "metadata": {
+    "resourceVersion": "918"
+  }
+}hrushi@terraform-worker01:~$ sudo crictl ps
+CONTAINER           IMAGE                                                                                                       CREATED             STATE               NAME                 ATTEMPT             POD ID              POD
+7d501a4b07259       docker.io/library/busybox@sha256:141c253bc4c3fd0a201d32dc1f493bcf3fff003b6df416dea4f41046e0f37d47           2 minutes ago       Running             busybox              0                   59d12276a369f       busybox-sleep-edge-79f4846b85-wrgj4
+0635bb4d05e2d       docker.io/poorunga/go-echo@sha256:74382b96e0c6e936b03d6cd2ecbabcb22a2597b14823a81167fe9c1388c61fd6          2 minutes ago       Running             tcp-echo-container   0                   f7182c05aff8f       tcp-echo-edge-757f4559d5-fndzx
+8610545eb507f       docker.io/poorunga/serve_hostname@sha256:45535267e1ccebee45acd4c0cada2d1d2209777e1d40a140dbb875c854632b22   3 minutes ago       Running             hostname             0                   a0001097ee7bd       hostname-edge-7d596db977-4vsw4
+5498dfa9e8508       docker.io/kubeedge/edgemesh-agent@sha256:571aea8d9303670df5516b67ea6922318fa9c25e76e3edfd5f0fd333b0f1a2ba   7 minutes ago       Running             edgemesh-agent       0                   dfa9c404d57ab       edgemesh-agent-pdn5f
+4065354df0f1d       db7b01e105753475c198490cf875df1314fd1a599f67ea1b184586cb399e1cae                                            11 minutes ago      Running             kube-proxy           0                   fc8f8a05e882e       kube-proxy-5j6hr
+0b782011b9e92       5dade4ce550b85d4a56054bc8d74e72350f46613129145c28dd7fa39ccf2c6be                                            11 minutes ago      Running             mqtt                 0                   091fc92b0b30b       mqtt-kubeedge
+hrushi@terraform-worker01:~$ sudo crictl exec -it 7d501a4b07259
+NAME:
+   crictl exec - Run a command in a running container
+
+USAGE:
+   crictl exec command [command options] CONTAINER-ID COMMAND [ARG...]
+
+COMMANDS:
+   help, h  Shows a list of commands or help for one command
+
+OPTIONS:
+   --interactive, -i  Keep STDIN open (default: false)
+   --sync, -s         Run the command synchronously (default: false)
+   --timeout value    Timeout in seconds (default: 0)
+   --tty, -t          Allocate a pseudo-TTY (default: false)
+   --help, -h         show help (default: false)
+hrushi@terraform-worker01:~$ sudo crictl exec -it 7d501a4b07259 sh
+/ # telnet tcp-echo-cloud-svc.cloudzone 2701
+Welcome, you are connected to node terraform-master.
+Running on Pod tcp-echo-cloud-64fbb784d9-dmnq8.
+In namespace cloudzone.
+With IP address 10.85.0.6.
+Service default.
+ll
+ll
+^C
+Console escape. Commands are:
+
+ l      go to line mode
+ c      go to character mode
+ z      suspend telnet
+ e      exit telnet
+continuing...
+^Z[1]+  Stopped                    telnet tcp-echo-cloud-svc.cloudzone 2701
+/ # exit
+You have stopped jobs.
+/ # exit
+hrushi@terraform-worker01:~$
