@@ -85,7 +85,7 @@ wget https://github.com/kubeedge/kubeedge/releases/download/$KUBEEDGE_VERSION/ke
 tar -zxvf keadm-$KUBEEDGE_VERSION-linux-amd64.tar.gz
 sudo cp keadm-$KUBEEDGE_VERSION-linux-amd64/keadm/keadm /usr/local/bin/keadm
 
-sleep 30s
+sleep 20s
 # allow pods scheduling on master, (required for coredns)
 kubectl taint node --all node-role.kubernetes.io/control-plane:NoSchedule-
 

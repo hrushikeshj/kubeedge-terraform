@@ -26,3 +26,7 @@ echo "master done"
 gsutil cp 'gs://kubeedge-config-bucket/*.yaml' ./
 
 echo "created" > /cluster-inited
+
+sleep 30
+echo "stating master_edgemesh.sh"
+sudo bash master_edgemesh.sh

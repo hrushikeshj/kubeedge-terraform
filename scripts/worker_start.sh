@@ -27,7 +27,7 @@ do
     sleep 20
 done
 
-config_path="/hrushi2002j/configs"
+config_path="/home/hrushi2002j/configs"
 sudo mkdir -p $config_path
 sudo gsutil cp $KB/token $config_path/
 sudo gsutil cp $KB/CONTROL_IP $config_path/
@@ -36,3 +36,6 @@ sudo bash edge.sh
 
 echo "edge done"
 echo "created" > /cluster-inited
+
+echo "stating edge_edgemesh.sh"
+sudo bash edge_edgemesh.sh

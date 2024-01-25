@@ -8,7 +8,7 @@ exec &> /edge.log
 # rm below line
 # head telnet  2701
 
-config_path="/hrushi2002j/configs"
+config_path="/home/hrushi2002j/configs"
 
 # /bin/bash $config_path/join.sh -v
 
@@ -28,7 +28,7 @@ sudo bash -c 'echo "cgroup_manager = \"systemd\"" > /etc/crio/crio.conf.d/00-def
 sudo systemctl daemon-reload
 sudo systemctl restart crio
 
-config_path="/hrushi2002j/configs"
+
 token=$(cat $config_path/token)
 control_ip=$(cat $config_path/CONTROL_IP)
 sudo keadm join --cloudcore-ipport=$control_ip:10000 --token=$token \

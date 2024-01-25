@@ -36,3 +36,15 @@ resource "google_storage_bucket_object" "echo_yaml" {
   source = "./scripts/echo.yaml"
   bucket = google_storage_bucket.config_bucket.name
 }
+
+resource "google_storage_bucket_object" "master_edgemesh" {
+  name   = "master_edgemesh.sh"
+  source = "./scripts/master_edgemesh.sh"
+  bucket = google_storage_bucket.config_bucket.name
+}
+
+resource "google_storage_bucket_object" "edge_edgemesh" {
+  name   = "edge_edgemesh.sh"
+  source = "./scripts/edge_edgemesh.sh"
+  bucket = google_storage_bucket.config_bucket.name
+}
