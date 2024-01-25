@@ -28,8 +28,9 @@ resource "google_compute_instance" "master" {
   }
 }
 
-resource "google_compute_instance" "worker01" {
-  name         = "terraform-worker01"
+resource "google_compute_instance" "workers" {
+  count        = 1
+  name         = "terraform-worker-${count.index+1}"
   machine_type = "e2-medium"
 
   metadata_startup_script = "${file("./scripts/worker_start.sh")}"

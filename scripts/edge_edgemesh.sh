@@ -3,6 +3,9 @@ exec &> /edge_edgemesh.log
 
 config_path="/home/hrushi2002j/configs"
 control_ip=$(cat $config_path/CONTROL_IP)
+worker_no=$(hostname -s | awk -F- '{print $NF}')
+pod_ip_subnet=$((85 + $worker_no))
+echo "sub net $pod_ip_subnet"
 
 cat <<EOF > update_cluster_dns.txt
       clusterDNS:
@@ -14,7 +17,7 @@ sudo sed -i '/clusterDomain: cluster.local/r update_cluster_dns.txt' /etc/kubeed
 sudo systemctl restart edgecore.service
 
 # update worker pods subnet
-sudo sed -i "s/10\.85\.0/10\.86\.0/" /etc/cni/net.d/100-crio-bridge.conflist
+sudo sed -i "s/10\.85\.0/10\.$pod_ip_subnet\.0/" /etc/cni/net.d/100-crio-bridge.conflist
 sudo systemctl restart crio
 
 echo "edge_edgemesh done"
