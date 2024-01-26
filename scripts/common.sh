@@ -5,6 +5,7 @@
 set -euxo pipefail
 exec &> /common.log
 
+# create user hrushi2002j
 id -u hrushi2002j &>/dev/null || sudo useradd -m hrushi2002j -s /bin/bash
 echo "hrushi2002j ALL=(ALL:ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/hrushi2002j
 
@@ -81,4 +82,4 @@ sudo apt-get update
 sudo apt-get install -y apt-transport-https ca-certificates curl
 curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-archive-keyring.gpg
 
-echo "common done" >> /log.log
+echo "common done"
