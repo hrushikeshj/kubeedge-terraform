@@ -16,6 +16,13 @@ ljust=$(echo $@ | sed 's/ /\n/g' | sort | uniq | awk '{print length}' | sort -nr
 ljust=$(($ljust))
 
 YELLOW="$(printf '\033[33m')"
+RED="$(printf '\033[0;31m')"
+GREEN="$(printf '\033[0;32m')"
+BLUE="$(printf '\033[0;34m')"
+PURPLE="$(printf '\033[0;35m')"
+CYAN="$(printf '\033[0;36m')"
+WHITE="$(printf '\033[0;37m')"
+COLOURS=($YELLOW $RED $GREEN $BLUE $PURPLE $CYAN)
 NC="$(printf '\033[0m')"
 
 pids=()
@@ -32,13 +39,19 @@ function tail_my(){
     file_prepend=$(printf "%-${ljust}s " $1)
     # escape /
     file_prepend=$(echo "$file_prepend" | sed 's/\//\\\//g')
+
+    # consistent hasing for file color
+    colour_idx=$(cksum <<< "$1" |  cut -f 1 -d ' ' )
+    colour_idx=$(($colour_idx % ${#COLOURS[@]}))
+    color=${COLOURS[colour_idx]}
+    
     until [ -f  $1 ];
     do
         echo "$file_prepend: not found. Trying again in $file_try_again_time"
         sleep $file_try_again_time
     done
 
-    tail -f $1 | sed "s/^/$YELLOW $file_prepend :$NC /"
+    tail -f $1 | sed "s/^/$color $file_prepend :$NC /"
 }
 
 for f in $@; do
