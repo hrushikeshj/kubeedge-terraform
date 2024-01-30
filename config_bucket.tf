@@ -28,6 +28,13 @@ resource "google_storage_bucket_object" "test_suite" {
   bucket = google_storage_bucket.config_bucket.name
 }
 
+resource "google_storage_bucket_object" "monitoring" {
+  for_each = fileset("${path.module}/scripts/monitoring", "*")
+
+  name   = "monitoring/${each.value}"
+  source = "./scripts/monitoring/${each.value}"
+  bucket = google_storage_bucket.config_bucket.name
+}
 
 # resource "google_storage_bucket_object" "common" {
 #   name   = "common.sh"

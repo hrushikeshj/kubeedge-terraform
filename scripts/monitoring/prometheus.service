@@ -1,0 +1,15 @@
+[Unit]
+Description=Prometheus Service
+
+[Service]
+Type=simple
+User=root
+Group=root
+WorkingDirectory=/monitoring/prometheus
+ExecStart=/monitoring/prometheus/prometheus --config.file=/monitoring/prometheus/prometheus.yaml --web.enable-lifecycle
+TimeoutSec=60s
+Restart=always
+RestartSec=15s
+
+[Install]
+WantedBy=multi-user.target
