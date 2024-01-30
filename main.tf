@@ -1,12 +1,12 @@
 provider "google" {
   project = "kube-edge-412213"
   region  = "us-central1"
-  zone    = "us-central1-c"
+  zone    = "us-central1-c" # todo change location
 }
 
 resource "google_compute_instance" "master" {
   name         = "terraform-master"
-  machine_type = "e2-medium"
+  machine_type = "e2-highcpu-4"#e2-highcpu-4
 
   metadata_startup_script = "${file("./scripts/master_start.sh")}"
 
@@ -22,14 +22,14 @@ resource "google_compute_instance" "master" {
 
   network_interface {
     # A default network is created for all GCP projects
-    network = google_compute_network.vpc_network.self_link
+    subnetwork  = google_compute_subnetwork.vpc_subnet.self_link
     access_config {
     }
   }
 }
 
 resource "google_compute_instance" "workers" {
-  count        = 1
+  count        = var.edge_nodes_count
   name         = "terraform-worker-${count.index+1}"
   machine_type = "e2-medium"
 
@@ -47,7 +47,7 @@ resource "google_compute_instance" "workers" {
 
   network_interface {
     # A default network is created for all GCP projects
-    network = google_compute_network.vpc_network.self_link
+    subnetwork  = google_compute_subnetwork.vpc_subnet.self_link
     access_config {
     }
   }

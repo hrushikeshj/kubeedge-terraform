@@ -4,6 +4,12 @@ resource "google_compute_network" "vpc_network" {
   auto_create_subnetworks = "true"
 }
 
+resource "google_compute_subnetwork" "vpc_subnet" {
+  name          = "terraform-vpc-subnet"
+  ip_cidr_range = "192.168.0.0/16"
+  region        = "us-central1"
+  network       = google_compute_network.vpc_network.name
+}
 
 resource "google_compute_firewall" "allow_all_ingress" {
   name      = "vm-allow-all-ingress"
