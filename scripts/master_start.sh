@@ -30,3 +30,7 @@ echo "created" > /cluster-inited
 sleep 30
 echo "stating master_edgemesh.sh"
 sudo bash master_edgemesh.sh
+
+# TODO: Wait for all nodes to join
+sudo gsutil cp $KB/monitoring/cadvisor.sh ./
+sudo bash cadvisor.sh

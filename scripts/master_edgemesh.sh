@@ -1,3 +1,4 @@
+#!/bin/bash
 set -euxo pipefail
 exec &> /master_edgemesh.log
 
