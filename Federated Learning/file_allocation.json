@@ -1,0 +1,11 @@
+{
+    "client_0": [
+        "../data1/terraform_worker_2.csv"
+    ],
+    "client_1": [
+        "../data1/terraform_worker_1.csv"
+    ],
+    "client_2": [
+        "../data1/terraform_worker_3.csv"
+    ]
+}

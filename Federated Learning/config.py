@@ -1,0 +1,8 @@
+# config.py
+NUM_CLIENTS = 3
+EPOCHS = 1
+WINDOW_SIZE = 100
+UNITS = 64
+SERVER_ADDRESS = "localhost:8080"
+DATA_DIR = "../data1"
+ALPHA=0.5
